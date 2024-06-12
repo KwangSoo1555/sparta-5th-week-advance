@@ -1,20 +1,23 @@
 import express from 'express';
 
 import { prisma } from '../utils/prisma.util.js';
-import { verifyAccessToken } from '../middlewares/require-access-token.middleware.js';
-import {
-  resumeCreateValidation,
-  resumeUpdateValidation,
-} from '../middlewares/joi-handler.middleware.js';
+import { resumeCreateValidator, resumeUpdateValidator } from '../middlewares/joi-handler.middleware.js';
+import { ResumesController } from '../controllers/resumes.controller.js';
 
 const router = express.Router();
 
+const resumesController = new ResumesController();
+
+router.post('/', resumesController.createPost)
+
+router.get('/', resumesController.getPosts)
+
 // create resume
-router.post('/post', verifyAccessToken, async (req, res, next) => {
+router.post('/post', resumeCreateValidator, async (req, res, next) => {
   try {
     const UserId = req.userId;
 
-    const { title, introduce } = await resumeCreateValidation.validateAsync(req.body);
+    const { title, introduce } = req.body;
 
     if (!UserId) {
       return res.status(400).json({ error: 'User ID not provided' });
@@ -46,7 +49,7 @@ router.post('/post', verifyAccessToken, async (req, res, next) => {
 });
 
 // read resume
-router.get('/', verifyAccessToken, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const UserId = req.userId;
 
@@ -81,7 +84,7 @@ router.get('/', verifyAccessToken, async (req, res, next) => {
 });
 
 // read resume detail
-router.get('/:resumeId', verifyAccessToken, async (req, res, next) => {
+router.get('/:resumeId', async (req, res, next) => {
   try {
     const UserId = req.userId;
     const resumeId = Number(req.params.resumeId);
@@ -110,12 +113,12 @@ router.get('/:resumeId', verifyAccessToken, async (req, res, next) => {
 });
 
 // update resume
-router.patch('/update/:resumeId', verifyAccessToken, async (req, res, next) => {
+router.patch('/update/:resumeId', resumeUpdateValidator, async (req, res, next) => {
   try {
     const UserId = req.userId;
     const resumeId = Number(req.params.resumeId);
 
-    const { title, introduce } = await resumeUpdateValidation.validateAsync(req.body);
+    const { title, introduce } = req.body;
 
     if (!title && !introduce) {
       return res.status(400).json({ message: 'You have to enter information for update.' });
@@ -176,4 +179,4 @@ router.delete('/delete/:resumeId', async (req, res, next) => {
   }
 });
 
-export { router };
+export default router;

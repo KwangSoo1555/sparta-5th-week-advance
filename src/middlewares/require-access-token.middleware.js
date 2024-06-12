@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.util.js';
 
-const verifyAccessToken = async (req, res, next) => {
+const accessTokenValidator = async (req, res, next) => {
   const accessToken = req.headers.authorization;
 
   if (!accessToken) {
@@ -20,7 +20,7 @@ const verifyAccessToken = async (req, res, next) => {
     const user = await prisma.users.findUnique({
       where: { userId: req.userId },
     });
-    
+
     if (!user) {
       return res.status(401).json({ error: 'Does not exist ' });
     }
@@ -37,4 +37,4 @@ const verifyAccessToken = async (req, res, next) => {
   }
 };
 
-export { verifyAccessToken };
+export { accessTokenValidator };

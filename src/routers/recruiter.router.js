@@ -1,13 +1,12 @@
 import express from 'express';
 
 import { prisma } from '../utils/prisma.util.js';
-import { verifyAccessToken } from '../middlewares/require-access-token.middleware.js';
 import { requireRoles } from '../middlewares/require-roles.middleware.js';
 
 const router = express.Router();
 
 // Assign role as recruiter
-router.patch('/:userId/role', verifyAccessToken, requireRoles(['RECRUITER']), async (req, res, next) => {
+router.patch('/:userId/role', requireRoles(['RECRUITER']), async (req, res, next) => {
     try {
       const userId = Number(req.params.userId);
       const role = req.body.role;
@@ -40,7 +39,7 @@ router.patch('/:userId/role', verifyAccessToken, requireRoles(['RECRUITER']), as
   });
 
 // Recruiters can find whole resume
-router.get('/', verifyAccessToken, requireRoles(['RECRUITER']), async (req, res) => {
+router.get('/', requireRoles(['RECRUITER']), async (req, res) => {
   try {
     const { sort = 'asc', status } = req.query;
     const orderBy = sort === 'desc' ? 'desc' : 'asc';
@@ -59,7 +58,7 @@ router.get('/', verifyAccessToken, requireRoles(['RECRUITER']), async (req, res)
 });
 
 // Recruiters can find specific resumes
-router.get('/resume/:resumeId', verifyAccessToken, requireRoles(['RECRUITER']), async (req, res, next) => {
+router.get('/resume/:resumeId', requireRoles(['RECRUITER']), async (req, res, next) => {
   try {
     const resumeId = Number(req.params.id);
 
@@ -78,7 +77,7 @@ router.get('/resume/:resumeId', verifyAccessToken, requireRoles(['RECRUITER']), 
 });
 
 // Application status change
-router.patch('/resume/status/:id', verifyAccessToken, requireRoles(['RECRUITER']), async (req, res, next) => {
+router.patch('/resume/status/:id', requireRoles(['RECRUITER']), async (req, res, next) => {
   try {
     const resumeId = Number(req.params.id);
     const { applicationStatus, reason } = req.body;
@@ -130,7 +129,7 @@ router.patch('/resume/status/:id', verifyAccessToken, requireRoles(['RECRUITER']
 });
 
 // Resume log list search
-router.get('/:id/logs', verifyAccessToken, requireRoles(['RECRUITER']), async (req, res, next) => {
+router.get('/:id/logs', requireRoles(['RECRUITER']), async (req, res, next) => {
   try {
     const resumeId  = Number(req.params.id);
 
@@ -146,4 +145,4 @@ router.get('/:id/logs', verifyAccessToken, requireRoles(['RECRUITER']), async (r
   }
 });
 
-export { router };
+export default router;
