@@ -1,9 +1,11 @@
-import { ResumeService } from '../services/resumes.service.js';
+// import { ResumeService } from '../services/resumes.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 
 export class ResumesController {
-  resumeService = new ResumeService();
+  constructor(resumesService) {
+    this.resumesService = resumesService;
+  }
 
   createResume = async (req, res, next) => {
     try {
@@ -18,7 +20,7 @@ export class ResumesController {
         });
       }
 
-      const createdPost = await this.resumeService.createPost(
+      const createdPost = await this.resumesService.createPost(
         userId,
         title,
         introduce
@@ -32,7 +34,7 @@ export class ResumesController {
 
   getResume = async (req, res, next) => {
     try {
-      const posts = await this.resumeService.findAllPosts();
+      const posts = await this.resumesService.findAllPosts();
 
       return res.status(HTTP_STATUS.OK).json({ data: posts });
     } catch (error) {
@@ -44,7 +46,7 @@ export class ResumesController {
     try {
       const { resumeId } = req.params;
 
-      const post = await this.resumeService.findPostById(
+      const post = await this.resumesService.findPostById(
         resumeId,
       );
 
@@ -59,13 +61,13 @@ export class ResumesController {
       const { resumeId } = req.params;
       const { title, content } = req.body;
 
-      const findResume = await this.resumeService.findResume(resumeId);
+      const findResume = await this.resumesService.findResume(resumeId);
 
       if (!findResume) {
         throw new Error ('Resume is not exist.');
       }
 
-        const updatedpost = await this.resumeService.updatePost(
+        const updatedpost = await this.resumesService.updatePost(
           resumeId,
           title,
           content,
@@ -81,13 +83,13 @@ export class ResumesController {
     try {
       const { resumeId } = req.params;
 
-      const findResume = await this.resumeService.findResume(resumeId);
+      const findResume = await this.resumesService.findResume(resumeId);
 
       if (!findResume) {
         throw new Error ('Resume is not exist.');
       }
 
-      const deletedPost = await this.resumeService.deletePost(
+      const deletedPost = await this.resumesService.deletePost(
         resumeId,
       );
 

@@ -1,11 +1,12 @@
-import { applicationStatusType } from '@prisma/client';
-import { ResumeRepository } from '../repositories/resumes.repository.js';
+// import { ResumeRepository } from '../repositories/resumes.repository.js';
 
-export class ResumeService {
-  resumeRepository = new ResumeRepository();
+export class ResumesService {
+  constructor(resumesRepository) {
+    this.resumesRepository = resumesRepository;
+  }
 
   createPost = async (userId, title, introduce) => {
-    const createdPost = await this.resumeRepository.createPost(
+    const createdPost = await this.resumesRepository.createPost(
       userId,
       title,
       introduce,
@@ -21,7 +22,7 @@ export class ResumeService {
   };
 
   findAllPosts = async () => {
-    const posts = await this.resumeRepository.findAllPosts();
+    const posts = await this.resumesRepository.findAllPosts();
 
     posts.sort((a, b) => {
       return b.createdAt - a.createdAt;
@@ -31,7 +32,7 @@ export class ResumeService {
       return {
         id: posts.id,
         title: posts.title,
-        applicationStatusType: posts.applicationStatus,
+        applicationStatusType: posts.applicationStatusType,
         createdAt: posts.createdAt,
         updatedAt: posts.updatedAt,
       };
@@ -39,7 +40,7 @@ export class ResumeService {
   };
 
   findPostById = async (resumeId) => {
-    const post = await this.resumeRepository.findPostById(
+    const post = await this.resumesRepository.findPostById(
       resumeId
     );
 
@@ -60,7 +61,7 @@ export class ResumeService {
       introduce,
     );
 
-    const updatedPost = await this.resumeRepository.findPostById(
+    const updatedPost = await this.resumesRepository.findPostById(
       resumeId,
     );
 
@@ -73,7 +74,7 @@ export class ResumeService {
   };
 
   deletePost = async (resumeId) => {
-    const post = await this.resumeRepository.deletePost(
+    const post = await this.resumesRepository.deletePost(
       resumeId,
     );
 
@@ -88,6 +89,6 @@ export class ResumeService {
   }
 
   findResume = async (resumeId) => {
-    return await this.resumeRepository.findResume(resumeId);
+    return await this.resumesRepository.findResume(resumeId);
   };
 }

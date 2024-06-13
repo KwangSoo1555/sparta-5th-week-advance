@@ -34,11 +34,9 @@ model Users {
   createdAt  DateTime  @default(now())                 @map("created_at")
   updatedAt  DateTime  @updatedAt                      @map("updated_at")
 
-  userIdToResume       Resume[]
+  userIdToResume       Resumes[]
   userIdToRefreshToken RefreshToken[]
   userIdToResumeLog    ResumeLog[]
-
-  @@map("Users")
 }
 
 enum RoleType { 
@@ -46,7 +44,7 @@ enum RoleType {
   RECRUITER 
 }
 
-model Resume {
+model Resumes {
   id                 Int     @id  @default(autoincrement())
   userId             Int                                     @map("user_Id")
   title              String
@@ -59,8 +57,6 @@ model Resume {
   resumeIdToResumeLog ResumeLog[]
 
   Users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("Resume")
 }
 
 enum applicationStatusType {
@@ -97,8 +93,8 @@ model ResumeLog {
   reason       String
   createdAt    DateTime  @default(now())                 @map("created_at")
 
-  Resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  Users Users   @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+  Resume Resumes @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  Users  Users   @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
 
   @@map("ResumeLog")
 }

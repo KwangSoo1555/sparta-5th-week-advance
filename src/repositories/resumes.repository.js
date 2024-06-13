@@ -1,8 +1,12 @@
-import { prisma } from '../utils/prisma.util.js';
+// import { prisma } from '../utils/prisma.util.js';
 
-export class ResumeRepository {
+export class ResumesRepository {
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
+
   createPost = async (userId, title, introduce) => {
-    const createdPost = await prisma.resume.create({
+    const createdPost = await this.prisma.resumes.create({
       data: {
         userId,
         title,
@@ -13,13 +17,13 @@ export class ResumeRepository {
   };
 
   findAllPosts = async () => {
-    const posts = await prisma.resume.findMany();
+    const posts = await this.prisma.resumes.findMany();
 
     return posts;
   };
 
   findPostById = async (resumeId) => {
-    const post = await prisma.resume.findUnique({
+    const post = await this.prisma.resumes.findUnique({
       where: { id: +resumeId },
     });
 
@@ -27,7 +31,7 @@ export class ResumeRepository {
   };
 
   updatePost = async (resumeId, title, introduce) => {
-    const updatedPost = await prisma.resume.update({
+    const updatedPost = await this.prisma.resumes.update({
       where: {id: +resumeId}, 
       data: {
         ...(title && {title}),
@@ -39,7 +43,7 @@ export class ResumeRepository {
   };
 
   deletePost = async (resumeId) => {
-    const deletedPost = await prisma.resume.delete({
+    const deletedPost = await this.prisma.resumes.delete({
       where: {
         id: +resumeId
       }, 
@@ -49,7 +53,7 @@ export class ResumeRepository {
   };
 
   findResume = async (resumeId) => {
-    return await prisma.resume.findUnique({
+    return await this.prisma.resumes.findUnique({
       where: { id: +resumeId },
     });
   };
