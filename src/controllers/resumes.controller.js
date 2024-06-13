@@ -18,7 +18,11 @@ export class ResumesController {
         });
       }
 
-      const createdPost = await this.resumeService.createPost(userId, title, introduce);
+      const createdPost = await this.resumeService.createPost(
+        userId,
+        title,
+        introduce
+      );
 
       return res.status(HTTP_STATUS.CREATED).json({ data: createdPost });
     } catch (error) {
@@ -28,9 +32,9 @@ export class ResumesController {
 
   getResume = async (req, res, next) => {
     try {
-      const findAllposts = await resumeService.findAllPosts();
+      const posts = await this.resumeService.findAllPosts();
 
-      return res.status(HTTP_STATUS.OK).json({ data: findAllposts });
+      return res.status(HTTP_STATUS.OK).json({ data: posts });
     } catch (error) {
       next(error);
     }
@@ -38,8 +42,58 @@ export class ResumesController {
 
   getResumeById = async (req, res, next) => {
     try {
+      const { resumeId } = req.params;
+
+      const post = await this.resumeService.findPostById(
+        resumeId,
+      );
+
+      return res.status(200).json({ data: post });
     } catch (error) {
       next(error);
     }
   };
+
+  updateResume = async (req, res, next) => {
+    try {
+      const { resumeId } = req.params;
+      const { title, content } = req.body;
+
+      const findResume = await this.resumeService.findResume(resumeId);
+
+      if (!findResume) {
+        throw new Error ('Resume is not exist.');
+      }
+
+        const updatedpost = await this.resumeService.updatePost(
+          resumeId,
+          title,
+          content,
+        );
+
+      return res.status(200).json({ data: updatedpost })
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  deleteResume = async (req, res, next) => {
+    try {
+      const { resumeId } = req.params;
+
+      const findResume = await this.resumeService.findResume(resumeId);
+
+      if (!findResume) {
+        throw new Error ('Resume is not exist.');
+      }
+
+      const deletedPost = await this.resumeService.deletePost(
+        resumeId,
+      );
+
+      return res.status(200).json({ data: deletedPost })
+    } catch (error) {
+      next(error);
+    }
+  }
 }

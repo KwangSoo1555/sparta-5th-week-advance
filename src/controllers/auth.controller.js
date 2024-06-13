@@ -33,24 +33,28 @@ export class AuthController {
         const isExistEmail = findUserByEmail.email;
         const isExistName = findUserByEmail.name;
 
-      if (isExistEmail) {
-        return res.status(HTTP_STATUS.CONFLICT).json({
-          status: HTTP_STATUS.CONFLICT,
-          message: 'This email already exists.',
-        });
-      }
+        if (isExistEmail) {
+          return res.status(HTTP_STATUS.CONFLICT).json({
+            status: HTTP_STATUS.CONFLICT,
+            message: 'This email already exists.',
+          });
+        }
 
-      if (isExistName) {
-        return res.status(HTTP_STATUS.CONFLICT).json({
-          status: HTTP_STATUS.CONFLICT,
-          message: 'This name already exists.',
-        });
+        if (isExistName) {
+          return res.status(HTTP_STATUS.CONFLICT).json({
+            status: HTTP_STATUS.CONFLICT,
+            message: 'This name already exists.',
+          });
+        }
       }
-    }
 
       const hashedPW = await bcrypt.hash(password, AUTH_CONSTANT.HASH_SALT);
 
-      const registeredUser = await this.authService.registerUser(name, email, hashedPW);
+      const registeredUser = await this.authService.registerUser(
+        name,
+        email,
+        hashedPW
+      );
 
       return res.status(HTTP_STATUS.CREATED).json({
         data: registeredUser,

@@ -1,13 +1,18 @@
+import { applicationStatusType } from '@prisma/client';
 import { ResumeRepository } from '../repositories/resumes.repository.js';
 
 export class ResumeService {
   resumeRepository = new ResumeRepository();
 
   createPost = async (userId, title, introduce) => {
-    const createdPost = await this.resumeRepository.createPost(userId, title, introduce);
+    const createdPost = await this.resumeRepository.createPost(
+      userId,
+      title,
+      introduce,
+    );
 
     return {
-      postId: createdPost.postId,
+      id: createdPost.id,
       title: createdPost.title,
       introduce: createdPost.introduce,
       createdAt: createdPost.createdAt,
@@ -24,12 +29,65 @@ export class ResumeService {
 
     return posts.map((posts) => {
       return {
-        postId: posts.postId,
+        id: posts.id,
         title: posts.title,
-        introduce: posts.introduce,
+        applicationStatusType: posts.applicationStatus,
         createdAt: posts.createdAt,
         updatedAt: posts.updatedAt,
       };
     });
+  };
+
+  findPostById = async (resumeId) => {
+    const post = await this.resumeRepository.findPostById(
+      resumeId
+    );
+
+    return {
+      id: post.id,
+      title: post.title,
+      introduce: post.introduce,
+      applicationStatusType: post.applicationStatus,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    };
+  };
+
+  updatePost = async (resumeId, title, introduce) => {
+    await this.resumeRepository.updatePost(
+      resumeId,
+      title,
+      introduce,
+    );
+
+    const updatedPost = await this.resumeRepository.findPostById(
+      resumeId,
+    );
+
+    return {
+      id: updatedPost.id,
+      title: updatedPost.title,
+      introduce: updatedPost.introduce,
+      updatedAt: updatedPost.updatedAt,
+    };
+  };
+
+  deletePost = async (resumeId) => {
+    const post = await this.resumeRepository.deletePost(
+      resumeId,
+    );
+
+    return {
+      id: post.id,
+      title: post.title,
+      introduce: post.introduce,
+      applicationStatusType: post.applicationStatus,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    }
+  }
+
+  findResume = async (resumeId) => {
+    return await this.resumeRepository.findResume(resumeId);
   };
 }

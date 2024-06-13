@@ -18,7 +18,7 @@ const accessTokenValidator = async (req, res, next) => {
     req.userId = decodedToken.userId;
 
     const user = await prisma.users.findUnique({
-      where: { userId: req.userId },
+      where: { id: req.userId },
     });
 
     if (!user) {

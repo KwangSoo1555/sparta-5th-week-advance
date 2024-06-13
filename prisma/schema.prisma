@@ -89,15 +89,15 @@ model RefreshToken {
 
 model ResumeLog {
   id           Int       @id  @default(autoincrement())
-  ResumeId     Int                                       @map("ResumeId")
-  recruiterId  Int                                       @map("recruiter_Id")
+  resumeId     Int                                       @map("resume_id")
+  recruiterId  Int                                       @map("recruiter_id")
 
   oldStatus    String                                    @map("old_status")
   newStatus    String                                    @map("new_status")
   reason       String
   createdAt    DateTime  @default(now())                 @map("created_at")
 
-  Resume Resume @relation(fields: [ResumeId], references: [id], onDelete: Cascade)
+  Resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   Users Users   @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
 
   @@map("ResumeLog")
