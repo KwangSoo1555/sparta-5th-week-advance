@@ -25,14 +25,14 @@ datasource db {
 }
 
 model Users {
-  userId     Int       @id  @default(autoincrement())  @map("userId")
-  name       String    @unique                         @map("name")
-  email      String    @unique                         @map("email")
-  password   String                                    @map("password")
+  id         Int       @id  @default(autoincrement())
+  name       String
+  email      String
+  password   String
 
-  role       String    @default("APPLICANT")           @map("role")
-  createdAt  DateTime  @default(now())                 @map("createdAt")
-  updatedAt  DateTime  @updatedAt                      @map("updatedAt")
+  role       RoleType  @default(APPLICANT)
+  createdAt  DateTime  @default(now())                 @map("created_at")
+  updatedAt  DateTime  @updatedAt                      @map("updated_at")
 
   userIdToResume       Resume[]
   userIdToRefreshToken RefreshToken[]
@@ -41,29 +41,29 @@ model Users {
   @@map("Users")
 }
 
-enum Role { 
+enum RoleType { 
   APPLICANT 
   RECRUITER 
 }
 
 model Resume {
-  resumeId           Int       @id  @default(autoincrement())  @map("resumeId")
-  UserId             Int                                       @map("UserId")
-  title              String                                    @map("title")
-  introduce          String    @db.Text                        @map("introduce")
+  id                 Int     @id  @default(autoincrement())
+  userId             Int                                     @map("user_Id")
+  title              String
+  introduce          String  @db.Text
 
-  applicationStatus  String    @default("APPLY")               @map("applicationStatus")
-  createdAt          DateTime  @default(now())                 @map("createdAt")
-  updatedAt          DateTime  @updatedAt                      @map("updatedAt")
+  applicationStatus  applicationStatusType  @default(APPLY)  @map("application_status")
+  createdAt          DateTime               @default(now())  @map("created_at")
+  updatedAt          DateTime               @updatedAt       @map("updated_at")
 
   resumeIdToResumeLog ResumeLog[]
 
-  Users Users @relation(fields: [UserId], references: [userId], onDelete: Cascade)
+  Users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("Resume")
 }
 
-enum applicationStatus {
+enum applicationStatusType {
   APPLY
   DROP
   PASS
@@ -73,32 +73,32 @@ enum applicationStatus {
 }
 
 model RefreshToken {
-  tokenId    Int       @id  @default(autoincrement())  @map("tokenId")
-  UserId     Int       @unique                         @map("UserId")
-  token      String    @unique                         @map("token")
+  id            Int       @id  @default(autoincrement())
+  userId        Int       @unique                         @map("user_id")
+  refreshToken  String?                                   @map("refresh_token")
 
-  ip         String                                    @map("ip")
-  userAgent  String                                    @map("userAgent")
-  expiresAt  DateTime                                  @map("expiresAt")
-  createdAt  DateTime  @default(now())                 @map("createdAt")
+  ip            String
+  userAgent     String                                    @map("user_agent")
+  createdAt     DateTime  @default(now())                 @map("created_at")
+  updatedAt     DateTime  @updatedAt                      @map("updated_at")
 
-  Users Users @relation(fields: [UserId], references: [userId], onDelete: Cascade)
+  Users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("RefreshToken")
 }
 
 model ResumeLog {
+  id           Int       @id  @default(autoincrement())
   ResumeId     Int                                       @map("ResumeId")
-  logId        Int       @id  @default(autoincrement())  @map("logId")
-  recruiterId  Int                                       @map("recruiterId")
+  recruiterId  Int                                       @map("recruiter_Id")
 
-  oldStatus    String                                    @map("odStatus")
-  newStatus    String                                    @map("newStatus")
-  reason       String                                    @map("reason")
-  createdAt    DateTime  @default(now())                 @map("createdAt")
+  oldStatus    String                                    @map("old_status")
+  newStatus    String                                    @map("new_status")
+  reason       String
+  createdAt    DateTime  @default(now())                 @map("created_at")
 
-  Resume Resume @relation(fields: [ResumeId], references: [resumeId], onDelete: Cascade)
-  Users Users @relation(fields: [recruiterId], references: [userId], onDelete: Cascade)
+  Resume Resume @relation(fields: [ResumeId], references: [id], onDelete: Cascade)
+  Users Users   @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
 
   @@map("ResumeLog")
 }

@@ -1,28 +1,28 @@
 import joi from 'joi';
+import { MESSAGES } from '../constants/message.constant.js';
+import { AUTH_CONSTANT } from '../constants/auth.constant.js';
 
 export const signupValidator = async (req, res, next) => {
   try {
     const signupSchema = joi.object({
-      name: joi.string().min(2).max(10).required().messages({
-        'string.base': 'This name must be only type of string.',
-        'string.min': 'This name must have at least 2 characters.',
-        'string.max': 'This name can be up to 10 characters long.',
-        'string.empty': 'Be sure to enter your name.',
-        'any.required': 'Be sure to enter your name',
+      name: joi.string().min(2).required().messages({
+        'string.base': MESSAGES.AUTH.COMMON.NAME.BASE,
+        'string.min': MESSAGES.AUTH.COMMON.NAME.MIN,
+        'string.empty': MESSAGES.AUTH.COMMON.NAME.REQUIRED,
+        'any.required': MESSAGES.AUTH.COMMON.NAME.REQUIRED,
       }),
       email: joi
         .string()
-        .min(1)
-        .max(100)
         .required()
-        .pattern(new RegExp('[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}'))
+        .email({
+          minDomainSegments: AUTH_CONSTANT.MIN_DOMAIN_SEGMENTS,
+          tlds: { allow: AUTH_CONSTANT.TLDS },
+        })
         .messages({
-          'string.base': 'This email must be only type of string.',
-          'string.min': 'This email must have at least 1 characters.',
-          'string.max': 'This email can be up to 30 characters long.',
-          'string.empty': 'Be sure to enter your email.',
-          'any.required': 'Be sure to enter your email.',
-          'string.pattern.base': 'This email is not vaild.',
+          'string.base': MESSAGES.AUTH.COMMON.EMAIL.BASE,
+          'string.pattern.base': MESSAGES.AUTH.COMMON.EMAIL.EMAIL,
+          'string.empty': MESSAGES.AUTH.COMMON.EMAIL.REQUIRED,
+          'any.required': MESSAGES.AUTH.COMMON.EMAIL.REQUIRED,
         }),
       password: joi.string().min(6).max(30).required().messages({
         'string.base': 'This password must be only type of string.',

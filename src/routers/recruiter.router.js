@@ -7,36 +7,36 @@ const router = express.Router();
 
 // Assign role as recruiter
 router.patch('/:userId/role', requireRoles(['RECRUITER']), async (req, res, next) => {
-    try {
-      const userId = Number(req.params.userId);
-      const role = req.body.role;
-  
-      if (!role) {
-        return res.status(400).json({ error: 'Enter the role to change.' });
-      }
-  
-      const allowedRoles = ['APPLICANT', 'RECRUITER'];
-      if (!allowedRoles.includes(role.toUpperCase())) {
-        return res.status(400).json({ error: 'Not valid role.' });
-      }
-  
-      const user = await prisma.users.findUnique({
-        where: { userId: userId }
-      });
-      if (!user) {
-        return res.status(404).json({ error: 'User not found.' });
-      }
-  
-      const updatedUser = await prisma.users.update({
-        where: { userId: userId },
-        data: { role: role.toUpperCase() },
-      });
-  
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      next(error);
+  try {
+    const userId = Number(req.params.userId);
+    const role = req.body.role;
+
+    if (!role) {
+      return res.status(400).json({ error: 'Enter the role to change.' });
     }
-  });
+
+    const allowedRoles = ['APPLICANT', 'RECRUITER'];
+    if (!allowedRoles.includes(role.toUpperCase())) {
+      return res.status(400).json({ error: 'Not valid role.' });
+    }
+
+    const user = await prisma.users.findUnique({
+      where: { userId: userId },
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const updatedUser = await prisma.users.update({
+      where: { userId: userId },
+      data: { role: role.toUpperCase() },
+    });
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Recruiters can find whole resume
 router.get('/', requireRoles(['RECRUITER']), async (req, res) => {
@@ -99,10 +99,17 @@ router.patch('/resume/status/:id', requireRoles(['RECRUITER']), async (req, res,
       return res.status(404).json({ error: 'Resume does not exist.' });
     }
 
-    const validApplicationStatuses = ['APPLY', 'DROP', 'PASS', 'INTERVIEW1', 'INTERVIEW2', 'FINAL_PASS'];
+    const validApplicationStatuses = [
+      'APPLY',
+      'DROP',
+      'PASS',
+      'INTERVIEW1',
+      'INTERVIEW2',
+      'FINAL_PASS',
+    ];
     if (!validApplicationStatuses.includes(applicationStatus.toUpperCase())) {
-        return res.status(400).json({ error: 'Not valid application status.' });
-      }
+      return res.status(400).json({ error: 'Not valid application status.' });
+    }
 
     const updatedApplicationStatus = await prisma.resume.update({
       where: { resumeId: resumeId },
@@ -110,7 +117,7 @@ router.patch('/resume/status/:id', requireRoles(['RECRUITER']), async (req, res,
         applicationStatus: applicationStatus.toUpperCase(),
       },
     });
-    console.log(updatedApplicationStatus)
+    console.log(updatedApplicationStatus);
 
     const newResumeLog = await prisma.resume.create({
       data: {
@@ -118,7 +125,7 @@ router.patch('/resume/status/:id', requireRoles(['RECRUITER']), async (req, res,
         recruiterId: req.user.userId,
         oldStatus: resume.applicationStatus,
         newStatus: applicationStatus.toUpperCase(),
-        reason, 
+        reason,
       },
     });
 
@@ -131,7 +138,7 @@ router.patch('/resume/status/:id', requireRoles(['RECRUITER']), async (req, res,
 // Resume log list search
 router.get('/:id/logs', requireRoles(['RECRUITER']), async (req, res, next) => {
   try {
-    const resumeId  = Number(req.params.id);
+    const resumeId = Number(req.params.id);
 
     const resumeLogs = await prisma.resumeLog.findMany({
       where: { ResumeId: resumeId },

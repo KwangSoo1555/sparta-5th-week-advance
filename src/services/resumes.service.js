@@ -1,38 +1,35 @@
-import { PostsRepository } from "../repositories/resumes.repository.js";
+import { ResumeRepository } from '../repositories/resumes.repository.js';
 
-export class PostsService {
-    postsRepository = new PostsRepository();
+export class ResumeService {
+  resumeRepository = new ResumeRepository();
 
-    createPost = async (title, content) => {
-        const createdPost = await this.postsRepository.createPost(
-            nickname, password, title, content
-        )
+  createPost = async (userId, title, introduce) => {
+    const createdPost = await this.resumeRepository.createPost(userId, title, introduce);
 
-        return {
-            postId: createdPost.postId, 
-            nickname: createdPost.nickname, 
-            title: createdPost.title, 
-            content: createdPost.content, 
-            createdAt: createdPost.createdAt, 
-            updatedAt: createdPost.updatedAt, 
-        }
-    }
-    
-    findAllPosts = async () => {
-        const posts = await this.postsRepository.findAllPosts();
+    return {
+      postId: createdPost.postId,
+      title: createdPost.title,
+      introduce: createdPost.introduce,
+      createdAt: createdPost.createdAt,
+      updatedAt: createdPost.updatedAt,
+    };
+  };
 
-        posts.sort((a, b) => {
-            return b.createdAt - a.createdAt;
-        });
+  findAllPosts = async () => {
+    const posts = await this.resumeRepository.findAllPosts();
 
-        return posts.map((posts) => {
-            return {
-                postId: posts.postId, 
-                nickname: posts.nickname, 
-                title: posts.title, 
-                createdAt: posts.createdAt, 
-                updatedAt: posts.updatedAt,
-            }
-        })
-    }
+    posts.sort((a, b) => {
+      return b.createdAt - a.createdAt;
+    });
+
+    return posts.map((posts) => {
+      return {
+        postId: posts.postId,
+        title: posts.title,
+        introduce: posts.introduce,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+      };
+    });
+  };
 }

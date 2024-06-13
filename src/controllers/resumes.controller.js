@@ -1,65 +1,45 @@
-import { PostsService } from '../services/resumes.service.js';
+import { ResumeService } from '../services/resumes.service.js';
+import { HTTP_STATUS } from '../constants/http-status.constant.js';
+import { MESSAGES } from '../constants/message.constant.js';
 
 export class ResumesController {
-    postsService = new PostsService();
+  resumeService = new ResumeService();
 
-    createPost = async (req, res, next) => {
-        try {
-            const { title, introduce } = req.body;
+  createResume = async (req, res, next) => {
+    try {
+      const userId = req.userId;
 
-            const createdPost = await this.postsService.createPost(
-                title, introduce
-            )
+      const { title, introduce } = req.body;
 
-            return res.status(201).json({data: createdPost})
-        } catch (error) {
-            next(error);
-        }
-    };
+      if (!userId) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
+          status: HTTP_STATUS.BAD_REQUEST,
+          message: MESSAGES.AUTH.COMMON.JWT.NO_USER,
+        });
+      }
 
-    getPosts = async (req, res, next) => {
-        try {
-            const posts = await postsService.findAllPosts();
+      const createdPost = await this.resumeService.createPost(userId, title, introduce);
 
-            return res.status(200).json({ data: posts })
-        } catch (error) {
-            next(error);
-        }
-    };
+      return res.status(HTTP_STATUS.CREATED).json({ data: createdPost });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getResume = async (req, res, next) => {
+    try {
+      const findAllposts = await resumeService.findAllPosts();
+
+      return res.status(HTTP_STATUS.OK).json({ data: findAllposts });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getResumeById = async (req, res, next) => {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  };
 }
-
-// create resume
-// router.post('/post', resumeCreateValidator, async (req, res, next) => {
-//     try {
-//       const UserId = req.userId;
-  
-//       const { title, introduce } = req.body;
-  
-//       if (!UserId) {
-//         return res.status(400).json({ error: 'User ID not provided' });
-//       }
-  
-//       const resumeCreate = await prisma.resume.create({
-//         data: {
-//           UserId,
-//           title,
-//           introduce,
-//         },
-//       });
-  
-//       return res.status(201).json({
-//         UserId: resumeCreate.UserId,
-//         resumeId: resumeCreate.resumeId,
-//         title: resumeCreate.title,
-//         introduce: resumeCreate.introduce,
-//         applicationStatus: resumeCreate.applicationStatus,
-//         createdAt: resumeCreate.createdAt,
-//         updatedAt: resumeCreate.updatedAt,
-//       });
-//     } catch (error) {
-//       if (error.isJoi) {
-//         return res.status(400).json({ error: error.details[0].message });
-//       }
-//       next(error);
-//     }
-//   });

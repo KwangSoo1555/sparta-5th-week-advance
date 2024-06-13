@@ -1,18 +1,20 @@
 import { prisma } from '../utils/prisma.util.js';
 
-export class PostsRepository {
-    findAllPosts = async () => {
-        const posts = await prisma.posts.findMany();
+export class ResumeRepository {
+  createPost = async (userId, title, introduce) => {
+    const createdPost = await prisma.resume.create({
+      data: {
+        userId,
+        title,
+        introduce,
+      },
+    });
+    return createdPost;
+  };
 
-        return posts;
-    }
+  findAllPosts = async () => {
+    const posts = await prisma.resume.findMany();
 
-    createPost = async (nickname, password, title, content) => {
-        const createdPost = await prisma.posts.create({
-            data: {
-                nickname, password, title, content,
-            }
-        });
-        return createdPost
-    }
+    return posts;
+  };
 }

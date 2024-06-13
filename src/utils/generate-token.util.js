@@ -1,14 +1,31 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt'; // 리프레쉬토큰 해쉬
+import bcrypt from 'bcrypt';
 
-import { prisma } from './prisma.util.js'; // 리프레쉬토큰 저장
+import { AUTH_CONSTANT } from '../constants/auth.constant.js';
+import { RefreshTokenRepository } from '../repositories/refresh-token-reissue.repository.js';
 
-const generateAccessToken = (userId) => {
+export class GenerateToken {
+  // access token issue
+  static async accessToken(userId) {
     return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET_KEY, { expiresIn: '12h' });
-};
+  }
 
-const generateRefreshToken = (userId) => {
+  // refresh token issue
+  static async refreshToken(userId) {
     return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '7d' });
-};
+  }
 
-export { generateAccessToken, generateRefreshToken }
+  // hashed refresh token store data base
+  static storeRefreshToken = async (userId, refreshToken, ip, userAgent) => {
+    const refreshTokenRepository = new RefreshTokenRepository();
+
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, AUTH_CONSTANT.HASH_SALT);
+
+    return await refreshTokenRepository.refreshTokenReissue(
+      userId,
+      hashedRefreshToken,
+      ip,
+      userAgent
+    );
+  };
+}

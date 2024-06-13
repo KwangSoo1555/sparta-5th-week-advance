@@ -17,4 +17,4 @@ const connectPrisma = async () => {
   }
 };
 
-export { connectPrisma, prisma }
+export { connectPrisma, prisma };

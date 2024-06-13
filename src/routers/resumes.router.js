@@ -1,52 +1,57 @@
 import express from 'express';
 
 import { prisma } from '../utils/prisma.util.js';
-import { resumeCreateValidator, resumeUpdateValidator } from '../middlewares/joi-handler.middleware.js';
+import {
+  resumeCreateValidator,
+  resumeUpdateValidator,
+} from '../middlewares/joi-handler.middleware.js';
 import { ResumesController } from '../controllers/resumes.controller.js';
 
 const router = express.Router();
 
 const resumesController = new ResumesController();
 
-router.post('/', resumesController.createPost)
+router.post('/', resumesController.createResume);
 
-router.get('/', resumesController.getPosts)
+router.get('/', resumesController.getResume);
+
+router.get('/:resumeId', resumesController.getResumeById);
 
 // create resume
-router.post('/post', resumeCreateValidator, async (req, res, next) => {
-  try {
-    const UserId = req.userId;
+// router.post('/post', resumeCreateValidator, async (req, res, next) => {
+//   try {
+//     const UserId = req.userId;
 
-    const { title, introduce } = req.body;
+//     const { title, introduce } = req.body;
 
-    if (!UserId) {
-      return res.status(400).json({ error: 'User ID not provided' });
-    }
+//     if (!UserId) {
+//       return res.status(400).json({ error: 'User ID not provided' });
+//     }
 
-    const resumeCreate = await prisma.resume.create({
-      data: {
-        UserId,
-        title,
-        introduce,
-      },
-    });
+//     const resumeCreate = await prisma.resume.create({
+//       data: {
+//         UserId,
+//         title,
+//         introduce,
+//       },
+//     });
 
-    return res.status(201).json({
-      UserId: resumeCreate.UserId,
-      resumeId: resumeCreate.resumeId,
-      title: resumeCreate.title,
-      introduce: resumeCreate.introduce,
-      applicationStatus: resumeCreate.applicationStatus,
-      createdAt: resumeCreate.createdAt,
-      updatedAt: resumeCreate.updatedAt,
-    });
-  } catch (error) {
-    if (error.isJoi) {
-      return res.status(400).json({ error: error.details[0].message });
-    }
-    next(error);
-  }
-});
+//     return res.status(201).json({
+//       UserId: resumeCreate.UserId,
+//       resumeId: resumeCreate.resumeId,
+//       title: resumeCreate.title,
+//       introduce: resumeCreate.introduce,
+//       applicationStatus: resumeCreate.applicationStatus,
+//       createdAt: resumeCreate.createdAt,
+//       updatedAt: resumeCreate.updatedAt,
+//     });
+//   } catch (error) {
+//     if (error.isJoi) {
+//       return res.status(400).json({ error: error.details[0].message });
+//     }
+//     next(error);
+//   }
+// });
 
 // read resume
 router.get('/', async (req, res, next) => {
