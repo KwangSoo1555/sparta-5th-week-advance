@@ -32,11 +32,11 @@ export class ResumesRepository {
 
   updatePost = async (resumeId, title, introduce) => {
     const updatedPost = await this.prisma.resumes.update({
-      where: {id: +resumeId}, 
+      where: { id: +resumeId },
       data: {
-        ...(title && {title}),
-        ...(introduce && {introduce}), 
-      }, 
+        ...(title && { title }),
+        ...(introduce && { introduce }),
+      },
     });
 
     return updatedPost;
@@ -46,7 +46,7 @@ export class ResumesRepository {
     const deletedPost = await this.prisma.resumes.delete({
       where: {
         id: +resumeId
-      }, 
+      },
     });
 
     return deletedPost;

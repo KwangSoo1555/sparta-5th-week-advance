@@ -45,21 +45,21 @@ enum RoleType {
 }
 
 model Resumes {
-  id                 Int     @id  @default(autoincrement())
-  userId             Int                                     @map("user_Id")
-  title              String
-  introduce          String  @db.Text
+  id            Int     @id  @default(autoincrement())
+  userId        Int                                     @map("user_Id")
+  title         String
+  introduce     String  @db.Text
 
-  applicationStatus  applicationStatusType  @default(APPLY)  @map("application_status")
-  createdAt          DateTime               @default(now())  @map("created_at")
-  updatedAt          DateTime               @updatedAt       @map("updated_at")
+  resumeStatus  resumeStatusType  @default(APPLY)  @map("resume_status")
+  createdAt     DateTime               @default(now())  @map("created_at")
+  updatedAt     DateTime               @updatedAt       @map("updated_at")
 
   resumeIdToResumeLog ResumeLog[]
 
   Users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-enum applicationStatusType {
+enum resumeStatusType {
   APPLY
   DROP
   PASS

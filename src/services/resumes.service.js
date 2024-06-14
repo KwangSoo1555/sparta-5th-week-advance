@@ -32,7 +32,7 @@ export class ResumesService {
       return {
         id: posts.id,
         title: posts.title,
-        applicationStatusType: posts.applicationStatusType,
+        resumeStatusType: posts.resumeStatusType,
         createdAt: posts.createdAt,
         updatedAt: posts.updatedAt,
       };
@@ -46,9 +46,10 @@ export class ResumesService {
 
     return {
       id: post.id,
+      userId: post.userId, 
       title: post.title,
       introduce: post.introduce,
-      applicationStatusType: post.applicationStatus,
+      resumeStatusType: post.resumeStatusType,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
     };
@@ -82,7 +83,7 @@ export class ResumesService {
       id: post.id,
       title: post.title,
       introduce: post.introduce,
-      applicationStatusType: post.applicationStatus,
+      resumeStatusType: post.resumeStatusType,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
     }
