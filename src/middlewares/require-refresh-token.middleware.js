@@ -23,7 +23,7 @@ const refreshTokenValidator = async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid token structure.' });
     }
 
-    req.user = { id: userId }
+    req.user = { id: userId };
 
     const user = await prisma.users.findUnique({ where: { id: req.user.id } });
 

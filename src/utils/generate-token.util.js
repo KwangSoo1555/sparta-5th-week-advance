@@ -4,14 +4,14 @@ import bcrypt from 'bcrypt';
 import { AUTH_CONSTANT } from '../constants/auth.constant.js';
 import { RefreshTokenRepository } from '../repositories/refresh-token-reissue.repository.js';
 
-export class GenerateToken {
+export class JWT {
   // access token issue
-  static async accessToken(userId) {
+  static async generateAccessToken(userId) {
     return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET_KEY, { expiresIn: '12h' });
   }
 
   // refresh token issue
-  static async refreshToken(userId) {
+  static async generateRefreshToken(userId) {
     return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET_KEY, { expiresIn: '7d' });
   }
 

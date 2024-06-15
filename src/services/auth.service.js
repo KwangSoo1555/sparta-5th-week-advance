@@ -4,7 +4,11 @@ export class AuthService {
   authRepository = new AuthRepository();
 
   registerUser = async (name, email, password) => {
-    const registeredUser = await this.authRepository.registerUser(name, email, password);
+    const registeredUser = await this.authRepository.registerUser(
+      name, 
+      email, 
+      password, 
+    );
 
     return {
       id: registeredUser.id,

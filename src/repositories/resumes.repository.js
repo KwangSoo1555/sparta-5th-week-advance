@@ -1,5 +1,3 @@
-// import { prisma } from '../utils/prisma.util.js';
-
 export class ResumesRepository {
   constructor(prisma) {
     this.prisma = prisma;
@@ -22,9 +20,9 @@ export class ResumesRepository {
     return posts;
   };
 
-  findPostById = async (resumeId) => {
+  findOnePost = async (resumeId) => {
     const post = await this.prisma.resumes.findUnique({
-      where: { id: +resumeId },
+      where: { id: resumeId },
     });
 
     return post;
@@ -32,10 +30,11 @@ export class ResumesRepository {
 
   updatePost = async (resumeId, title, introduce) => {
     const updatedPost = await this.prisma.resumes.update({
-      where: { id: +resumeId },
+      where: { id: resumeId },
       data: {
         ...(title && { title }),
         ...(introduce && { introduce }),
+        updatedAt: new Date(),
       },
     });
 
@@ -44,17 +43,15 @@ export class ResumesRepository {
 
   deletePost = async (resumeId) => {
     const deletedPost = await this.prisma.resumes.delete({
-      where: {
-        id: +resumeId
-      },
+      where: { id: resumeId },
     });
 
     return deletedPost;
   };
 
-  findResume = async (resumeId) => {
-    return await this.prisma.resumes.findUnique({
-      where: { id: +resumeId },
+  checkResume = async (params) => {
+    return await this.prisma.resumes.findFirst({
+      where: params,
     });
   };
-};
+}

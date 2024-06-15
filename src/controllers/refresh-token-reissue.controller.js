@@ -1,5 +1,5 @@
 import { RefreshTokenService } from '../services/refresh-token-reissue.service.js';
-import { GenerateToken } from '../utils/generate-token.util.js';
+import { JWT } from '../utils/generate-token.util.js';
 
 export class RefreshTokenController {
   refreshTokenService = new RefreshTokenService();
@@ -9,13 +9,13 @@ export class RefreshTokenController {
       const userId = req.user.Id;
 
       // access token and refresh token are reissued identically
-      const reIssueAccessToken = await GenerateToken.accessToken(userId);
-      const reIssueRefreshToken = await GenerateToken.refreshToken(userId);
+      const reIssueAccessToken = await JWT.accessToken(userId);
+      const reIssueRefreshToken = await JWT.refreshToken(userId);
 
-      return res.status(200).json({ 
-        accessToken: reIssueAccessToken, 
-        refreshToken: reIssueRefreshToken, 
-       });
+      return res.status(200).json({
+        accessToken: reIssueAccessToken,
+        refreshToken: reIssueRefreshToken,
+      });
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
         return res.status(401).json({ error: 'Refresh token has expired.' });

@@ -1,4 +1,3 @@
-// import { ResumeService } from '../services/resumes.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 
@@ -20,11 +19,7 @@ export class ResumesController {
         });
       }
 
-      const createdPost = await this.resumesService.createPost(
-        userId,
-        title,
-        introduce
-      );
+      const createdPost = await this.resumesService.createPost(userId, title, introduce);
 
       return res.status(HTTP_STATUS.CREATED).json({ data: createdPost });
     } catch (error) {
@@ -42,13 +37,11 @@ export class ResumesController {
     }
   };
 
-  getResumeById = async (req, res, next) => {
+  getResumeDetails = async (req, res, next) => {
     try {
-      const { resumeId } = req.params;
+      const resumeId = +req.params.resumeId;
 
-      const post = await this.resumesService.findPostById(
-        resumeId,
-      );
+      const post = await this.resumesService.findOnePost(resumeId);
 
       return res.status(200).json({ data: post });
     } catch (error) {
@@ -58,44 +51,38 @@ export class ResumesController {
 
   updateResume = async (req, res, next) => {
     try {
-      const { resumeId } = req.params;
-      const { title, content } = req.body;
+      const resumeId = +req.params.resumeId;
+      const { title, introduce } = req.body;
 
-      const findResume = await this.resumesService.findResume(resumeId);
+      const findResume = await this.resumesService.checkResume({ id: resumeId });
 
       if (!findResume) {
-        throw new Error ('Resume is not exist.');
+        throw new Error('Resume is not exist.');
       }
 
-        const updatedpost = await this.resumesService.updatePost(
-          resumeId,
-          title,
-          content,
-        );
+      const updatedPost = await this.resumesService.updatePost(resumeId, title, introduce);
 
-      return res.status(200).json({ data: updatedpost })
+      return res.status(200).json({ data: updatedPost });
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   deleteResume = async (req, res, next) => {
     try {
-      const { resumeId } = req.params;
+      const resumeId = +req.params.resumeId;
 
-      const findResume = await this.resumesService.findResume(resumeId);
+      const findResume = await this.resumesService.checkResume({ id: resumeId });
 
       if (!findResume) {
-        throw new Error ('Resume is not exist.');
+        throw new Error('Resume is not exist.');
       }
 
-      const deletedPost = await this.resumesService.deletePost(
-        resumeId,
-      );
+      const deletedPost = await this.resumesService.deletePost(resumeId);
 
-      return res.status(200).json({ data: deletedPost })
+      return res.status(200).json({ data: deletedPost });
     } catch (error) {
       next(error);
     }
-  }
+  };
 }

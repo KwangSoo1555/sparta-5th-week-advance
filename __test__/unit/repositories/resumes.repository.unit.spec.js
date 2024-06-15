@@ -17,26 +17,25 @@ let mockPrisma = {
 let resumesRepository = new ResumesRepository(mockPrisma);
 
 describe('Posts Repository Unit Test', () => {
-
   // 각 test가 실행되기 전에 실행됩니다.
   beforeEach(() => {
     jest.resetAllMocks(); // 모든 Mock을 초기화합니다.
-  })
-  
+  });
+
   test('createPost Method', async () => {
-    const mockReturn = 'create Post Return String'
+    const mockReturn = 'create Post Return String';
     mockPrisma.resumes.create.mockReturnValue(mockReturn);
 
     const createPostParams = {
-        userId: 'createPostUserId', 
-        title: 'createPostTitle', 
-        introduce: 'createPostIntroduce', 
-    }
+      userId: 'createPostUserId',
+      title: 'createPostTitle',
+      introduce: 'createPostIntroduce',
+    };
 
     const createPostData = await resumesRepository.createPost(
-        createPostParams.userId, 
-        createPostParams.title, 
-        createPostParams.introduce, 
+      createPostParams.userId,
+      createPostParams.title,
+      createPostParams.introduce
     );
 
     expect(createPostData).toEqual(mockReturn);
@@ -44,13 +43,12 @@ describe('Posts Repository Unit Test', () => {
     expect(mockPrisma.resumes.create).toHaveBeenCalledTimes(1);
 
     expect(mockPrisma.resumes.create).toHaveBeenCalledWith({
-        data: {
-            userId: createPostParams.userId, 
-            title: createPostParams.title, 
-            introduce: createPostParams.introduce, 
-        }
+      data: {
+        userId: createPostParams.userId,
+        title: createPostParams.title,
+        introduce: createPostParams.introduce,
+      },
     });
-    
   });
 
   test('findAllPosts Method', async () => {
@@ -63,5 +61,4 @@ describe('Posts Repository Unit Test', () => {
 
     expect(resumesRepository.prisma.resumes.findMany).toHaveBeenCalledTimes(1);
   });
-
 });

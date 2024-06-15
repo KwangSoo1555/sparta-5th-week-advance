@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 
-import { AuthService } from '../services/auth.service.js';
-import { GenerateToken } from '../utils/generate-token.util.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { AUTH_CONSTANT } from '../constants/auth.constant.js';
+import { AuthService } from '../services/auth.service.js';
+import { JWT } from '../utils/generate-token.util.js';
 
 export class AuthController {
   authService = new AuthService();
@@ -16,14 +16,14 @@ export class AuthController {
       if (!passwordCheck) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           status: HTTP_STATUS.BAD_REQUEST,
-          message: 'You Should have to enter the passwordCheck.',
+          // message: 비밀번호를 입력하세요
         });
       }
 
       if (password !== passwordCheck) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           status: HTTP_STATUS.BAD_REQUEST,
-          message: 'Passwords do not match.',
+          // message: 비밀번호가 일치하지 않습니다.
         });
       }
 
@@ -36,27 +36,24 @@ export class AuthController {
         if (isExistEmail) {
           return res.status(HTTP_STATUS.CONFLICT).json({
             status: HTTP_STATUS.CONFLICT,
-            message: 'This email already exists.',
+            // message: 이미 존재하는 이메일입니다.
           });
         }
 
         if (isExistName) {
           return res.status(HTTP_STATUS.CONFLICT).json({
             status: HTTP_STATUS.CONFLICT,
-            message: 'This name already exists.',
+            // message: 이미 존재하는 이름입니다.
           });
         }
       }
 
       const hashedPW = await bcrypt.hash(password, AUTH_CONSTANT.HASH_SALT);
 
-      const registeredUser = await this.authService.registerUser(
-        name,
-        email,
-        hashedPW
-      );
+      const registeredUser = await this.authService.registerUser(name, email, hashedPW);
 
       return res.status(HTTP_STATUS.CREATED).json({
+        status: HTTP_STATUS.CREATED,
         data: registeredUser,
       });
     } catch (error) {
@@ -72,20 +69,26 @@ export class AuthController {
       const isExistEmail = findUserByEmail.email;
 
       if (!isExistEmail) {
-        return res.status(401).json({ message: 'This email does not exist.' });
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+          status: HTTP_STATUS.UNAUTHORIZED,
+          // message: 존재하지 않는 이메일입니다.
+        });
       }
 
       const matchPW = await bcrypt.compare(password, findUserByEmail.password);
       if (!matchPW) {
-        return res.status(401).json({ message: 'Password does not match.' });
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+          status: HTTP_STATUS.UNAUTHORIZED,
+          // message: 비밀번호가 일치하지 않습니다.
+        });
       }
 
       // Generate JWT and return it in the response.
-      const signedAccessToken = await GenerateToken.accessToken(findUserByEmail.id);
-      const signedRefreshToken = await GenerateToken.refreshToken(findUserByEmail.id);
+      const signedAccessToken = await JWT.generateAccessToken(findUserByEmail.id);
+      const signedRefreshToken = await JWT.generateRefreshToken(findUserByEmail.id);
 
       // Store refresh token in the database
-      await GenerateToken.storeRefreshToken(
+      await JWT.storeRefreshToken(
         findUserByEmail.id,
         signedRefreshToken,
         req.ip,

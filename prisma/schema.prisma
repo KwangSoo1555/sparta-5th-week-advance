@@ -51,8 +51,8 @@ model Resumes {
   introduce     String  @db.Text
 
   resumeStatus  resumeStatusType  @default(APPLY)  @map("resume_status")
-  createdAt     DateTime               @default(now())  @map("created_at")
-  updatedAt     DateTime               @updatedAt       @map("updated_at")
+  createdAt     DateTime          @default(now())  @map("created_at")
+  updatedAt     DateTime          @updatedAt       @map("updated_at")
 
   resumeIdToResumeLog ResumeLog[]
 

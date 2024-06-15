@@ -1,5 +1,6 @@
 import express from 'express';
 import authRouter from './auth.router.js';
+import userRouter from './user.router.js';
 import refreshTokenRouter from './refresh-token-reissue.router.js';
 import resumesRouter from './resumes.router.js';
 import recruiterRouter from './recruiter.router.js';
@@ -10,6 +11,7 @@ import { refreshTokenValidator } from '../middlewares/require-refresh-token.midd
 const router = express.Router();
 
 router.use('/', authRouter);
+router.use('/profile', accessTokenValidator, userRouter);
 router.use('/refreshToken', refreshTokenValidator, refreshTokenRouter);
 router.use('/resume', accessTokenValidator, resumesRouter);
 router.use('/recruiter', accessTokenValidator, recruiterRouter);

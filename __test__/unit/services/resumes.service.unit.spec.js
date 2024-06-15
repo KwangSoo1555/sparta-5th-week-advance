@@ -20,22 +20,22 @@ describe('Posts Service Unit Test', () => {
   // 각 test가 실행되기 전에 실행됩니다.
   beforeEach(() => {
     jest.resetAllMocks(); // 모든 Mock을 초기화합니다.
-  })
+  });
 
   test('findAllPosts Method', async () => {
     const samplePosts = [
-        {
-			"id": 5,
-			"title": "안녕하세요 이길동입니다.",
-			"createdAt": "2024-06-13T22:29:52.497Z",
-			"updatedAt": "2024-06-13T22:29:52.497Z"
-		},
-		{
-			"id": 4,
-			"title": "안녕하세요 박길동입니다.",
-			"createdAt": "2024-06-14T22:29:47.028Z",
-			"updatedAt": "2024-06-14T22:29:47.028Z"
-		},
+      {
+        id: 5,
+        title: '안녕하세요 이길동입니다.',
+        createdAt: '2024-06-13T22:29:52.497Z',
+        updatedAt: '2024-06-13T22:29:52.497Z',
+      },
+      {
+        id: 4,
+        title: '안녕하세요 박길동입니다.',
+        createdAt: '2024-06-14T22:29:47.028Z',
+        updatedAt: '2024-06-14T22:29:47.028Z',
+      },
     ];
 
     mockResumesRepository.findAllPosts.mockReturnValue(samplePosts);
@@ -43,9 +43,9 @@ describe('Posts Service Unit Test', () => {
     const allPosts = await resumesService.findAllPosts();
 
     expect(allPosts).toEqual(
-        samplePosts.sort((a, b) => {
-            return b.createdAt - a.createdAt;
-        })
+      samplePosts.sort((a, b) => {
+        return b.createdAt - a.createdAt;
+      })
     );
 
     expect(mockResumesRepository.findAllPosts).toHaveBeenCalledTimes(1);
@@ -53,14 +53,14 @@ describe('Posts Service Unit Test', () => {
 
   test('deletePost Method By Success', async () => {
     const samplePost = {
-        "id": 5,
-		"userId": 1,
-		"title": "안녕하세요 이길동입니다.",
-		"introduce": "저의 5 번째 이력서입니다.",
-		"resumeStatusType": "APPLY",
-		"createdAt": "2024-06-13T22:29:52.497Z",
-		"updatedAt": "2024-06-13T22:29:52.497Z"
-    }
+      id: 5,
+      userId: 1,
+      title: '안녕하세요 이길동입니다.',
+      introduce: '저의 5 번째 이력서입니다.',
+      resumeStatusType: 'APPLY',
+      createdAt: '2024-06-13T22:29:52.497Z',
+      updatedAt: '2024-06-13T22:29:52.497Z',
+    };
     mockResumesRepository.findPostById.mockReturnValue(samplePost);
 
     const deletedPost = await resumesService.deletePost(5);
@@ -69,14 +69,14 @@ describe('Posts Service Unit Test', () => {
     expect(mockResumesRepository.findPostById).toHaveBeenCalledTimes(samplePost.id);
 
     expect(deletedPost).toEqual({
-        id: samplePost.id, 
-        userId: samplePost.userId, 
-        title: samplePost.title, 
-        introduce: samplePost.introduce, 
-        resumeStatusType: samplePost.resumeStatusType, 
-        createdAt: samplePost.createdAt, 
-        updatedAt: samplePost.updatedAt, 
-    })
+      id: samplePost.id,
+      userId: samplePost.userId,
+      title: samplePost.title,
+      introduce: samplePost.introduce,
+      resumeStatusType: samplePost.resumeStatusType,
+      createdAt: samplePost.createdAt,
+      updatedAt: samplePost.updatedAt,
+    });
   });
 
   test('deletePost Method By Not Found Post Error', async () => {
