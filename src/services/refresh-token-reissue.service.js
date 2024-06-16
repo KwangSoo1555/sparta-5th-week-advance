@@ -1,24 +1,28 @@
-import { RefreshTokenRepository } from '../repositories/refresh-token-reissue.repository.js';
-
 export class RefreshTokenService {
-  refreshTokenRepository = new RefreshTokenRepository();
+  constructor(refreshTokenRepository) {
+    this.refreshTokenRepository = refreshTokenRepository;
+  }
 
-  refreshTokenReissue = async (userId, refreshToken, ip, userAgent) => {
-    const upsertRefreshToken = await this.refreshTokenRepository.refreshTokenReissue(
+  storeReIssueRefreshToken = async (userId, accessToken, refreshToken, hashedReIssueRefreshToken, ip, userAgent) => {
+    const updatedRefreshToken = await this.refreshTokenRepository.storeReIssueRefreshToken(
       userId,
-      refreshToken,
-      ip,
+      hashedReIssueRefreshToken,
+      ip, 
       userAgent
     );
 
     return {
-      id: upsertRefreshToken.id,
-      userId: upsertRefreshToken.userId,
-      refreshToken: upsertRefreshToken.refreshToken,
-      ip: upsertRefreshToken.ip,
-      userAgent: upsertRefreshToken.userAgent,
-      createdAt: upsertRefreshToken.createdAt,
-      updatedAt: upsertRefreshToken.updatedAt,
+      userId: updatedRefreshToken.userId,
+      accessToken: accessToken, 
+      refreshToken: refreshToken,
+      ip: updatedRefreshToken.ip,
+      userAgent: updatedRefreshToken.userAgent,
+      createdAt: updatedRefreshToken.createdAt,
+      updatedAt: updatedRefreshToken.updatedAt,
     };
+  };
+
+  checkRefreshToken = async (params) => {
+    return await this.refreshTokenRepository.checkRefreshToken(params);
   };
 }

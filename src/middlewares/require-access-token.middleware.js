@@ -13,18 +13,25 @@ const accessTokenValidator = async (req, res, next) => {
     return res.status(401).json({ error: 'Unsupported authorization method.' });
   }
 
-  try {
-    const decodedToken = jwt.verify(tokenParts[1], process.env.ACCESS_TOKEN_SECRET_KEY);
-    req.userId = decodedToken.userId;
+  const token = tokenParts[1]
 
-    const user = await prisma.users.findUnique({
-      where: { id: req.userId },
+  try {
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY);
+    const userId = decodedToken.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Invalid token structure.' });
+    }
+
+    const user = await prisma.users.findUnique({ 
+      where: { id: userId }, 
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'Does not exist ' });
+      return res.status(401).json({ error: 'User does not exist.' });
     }
 
+    user.password = undefined;
     req.user = user;
 
     next();

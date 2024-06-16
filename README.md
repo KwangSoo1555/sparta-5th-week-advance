@@ -1,11 +1,141 @@
-# sparta-4nd-week-expert
+# sparta-5th-week-advance
 
-- connect DB logic
-    1. npm install prisma @prisma/client
-    2. npx prisma init
-    3. schema.prisma datasource db provider, url modify
-    4. schema.prisma initiate model (test schema)
-    5. prisma connect to app.js (ex. prisma.util.js)
-    6. npx prisma generate
-    7. npx prisma db push
-    8. npm run dev# sparta-5th-week-advance
+## 프로젝트 소개
+
+- 숙련 주차에 제출했던 게시물 생성 api 과제에서 더욱 발전된 로직을 추가 구현하여 각 요구사항을 충족할 것.
+
+- 현재 요구사항 충족 현황
+
+  1. 개발 (필수) : 3-Layerd Architecture 를 적용하여 리팩토링
+
+     - 1-1. Layer 분리 : 권한 api (recruiter.router) 를 제외한 모든 라우터 구현 완료.
+
+     - 1-2. Layer 분리 후 에러처리 : 미구현. 추후 지속적인 리펙토링 예정. (무조건 구현 완료할 예정.)
+  
+  2. 개발 (선택) : Unit Test 작성
+     - 2-1. 의존성 주입 (DI) : 권한 라우터 (recruiter.router) 를 제외한 모든 라우터 구현 완료.
+
+     - 2-2. Jest 를 사용한 Test 기본 세팅 : Dummy Data 를 제외한 테스트 코드 기본 세팅 완료.
+
+     - 2-3. Controller, Service, Repository 의 Unit Test 작성 : 이력서 Layered pattern 만 구현. 추후 지속적인 리펙토링 예정. (모든 api 테스트 코드 작성 예정.)
+
+  3. 테스트 : API Client 로 동작 확인
+     - 3-1. 현재 구현 단계까지 모든 api 동작 확인 이상 없음.
+
+  4. 배포
+     - 4-1. 현재 http 로 배포. 추후에 https 로 변경 후 배포 예정.
+
+
+## 주요 기능
+
+### 1. 회원가입 api
+
+- 이메일, 이름, 비밀번호, 비밀번호 확인 코드를 request body 로 전달 받는다.
+
+- 비밀번호는 Hash 된 값으로 저장한다.
+
+- 사용자 id, 이름, 이메일, 권한, 생성일자, 수정일자의 반환 정보를 볼 수 있다.
+
+![회원가입 API](./imgs/1.%20회원가입.png)
+
+### 2. 로그인 api
+
+- 이메일, 비밀번호를 request body 로 전달 받는다.
+
+- 데이터 베이스에 일치하는 사용자가 존재할 경우 로그인 api가 정상 작동 된 것.
+
+- Access Token 과 Refresh Token 을 동시에 발급 받는다.
+
+- 사용자는 사용자 id, 이름, 이메일, 토큰의 반환 정보를 볼 수 있다.
+
+- Access Token 의 유효기간 : 12 시간
+
+- Refresh Token 의 유효기간 : 7 일
+
+![로그인 API](./imgs/2.%20로그인.png)
+
+### 3. 토큰 재발급 api
+
+- 사용자는 Access Token 의 유효기간이 지나면 보유하고 있는 Refresh Token 으로 Access Token 과 Refresh Token 을 동시에 재발급 받을 수 있다.
+
+- 보유 중인 Refresh Token 으로 Refresh Token 검증 미들웨어를 통과해야 한다. 
+
+- Refresh Token 이 만료되면 재발급 받을 수 없기 때문에 다시 로그인하여 토큰들을 재발급 받아야 한다.
+
+- 미들웨어 검증 통과 후 재발급이 성공하면 재발급 된 토큰, 사용자 id, ip, 브라우저 운영체제 (userAgent) 의 반환 정보를 볼 수 있다.
+
+![토큰 재발급 API](./imgs/3.%20토큰%20재발급.png)
+
+### 4. 사용자 정보 조회 api
+
+- 사용자는 보유한 Access Token 을 검증 받고 본인의 프로필을 조회할 수 있다.
+
+- 사용자 id, 이름, 이메일, 권한, 생성일자, 수정일자의 반환 정보를 볼 수 있다.
+
+![사용자 정보 조회 API](./imgs/4.%20사용자%20정보%20조회.png)
+
+### 5. 사용자 정보 수정 api
+
+- 사용자는 보유한 Access Token 을 검증 받고 본인의 프로필을 수정할 수 있다.
+
+- 이름, 이메일이 다른 사용자와 중복되지 않는 유효성 검사를 통과하면 수정 가능하며 request body 값이 null 이면 변경 없이 기존 값으로 대체된다.
+
+- 비밀번호 변경 시 현재 사용하고 있는 비밀번호가 입력 되어야 새로운 비밀번호로 변경 가능하다.
+
+- 새로운 비밀번호는 기존 비밀번호와 입력 비밀번호가 일치 해야지만 변경 가능하며 기존에 사용하던 비밀번호로 변경이 불가능하다.
+
+- 비밀번호를 제외하고 사용자 id, 이름, 이메일, 수정일자의 반환 정보를 볼 수 있다.
+
+![사용자 정보 수정 API](./imgs/5.%20사용자%20정보%20수정.png)
+
+### 6. 이력서 게시물 생성 api
+
+- 사용자는 보유한 Access Token 으로 이력서를 생성할 수 있다.
+
+- 제목, 소개를 request body 로 받는다.
+
+- 게시물 작성 유효성 검사를 통과하면 생성이 가능하다.
+
+- 이력서 id, 제목, 소개, 생성일자, 수정일자의 반환 정보를 볼 수 있다.
+
+![이력서 게시물 생성 API](./imgs/6.%20이력서%20게시물%20생성.png)
+
+### 7. 이력서 게시물 조회 api
+
+- 사용자는 보유한 Access Token 으로 모든 이력서를 조회할 수 있다.
+
+- 작성한 모든 이력서의 id, 제목, 생성일자, 수정일자의 반환 정보를 볼 수 있다.
+
+![이력서 게시물 조회 API](./imgs/7.%20이력서%20게시물%20조회.png)
+
+### 8. 이력서 게시물 상세 조회 api
+
+- 사용자는 보유한 Access Token 으로 이력서를 상세 조회할 수 있다.
+
+- 상세 조회할 이력서의 정보는 request params 로 도메인 주소에서 받는다.
+
+- 이력서의 id, 사용자의 id,  제목, 소개, 생성일자, 수정일자의 반환 정보를 볼 수 있다.
+
+![이력서 게시물 상세 조회 API](./imgs/8.%20이력서%20게시물%20상세%20조회.png)
+
+### 9. 이력서 게시물 수정 api
+
+- 사용자는 보유한 Access Token 으로 이력서를 수정할 수 있다.
+
+- 수정할 이력서의 정보는 request params 로 도메인 주소에서 받는다.
+
+- 제목과 소개가 null 값이지 않은 유효성 검사를 통과하면 수정이 가능하다.
+
+- 이력서의 수정된 제목, 소개, 수정일자와 이력서의 id 의 반환 정보를 볼 수 있다.
+
+![이력서 게시물 수정 API](./imgs/9.%20이력서%20게시물%20수정.png)
+
+### 10. 이력서 게시물 삭제 api
+
+- 사용자는 보유한 Access Token 으로 이력서를 삭제할 수 있다.
+
+- 삭제할 이력서의 정보는 request params 로 도메인 주소에서 받는다.
+
+- 이력서 삭제 시 저장 되어 있던 이력서 id, 제목, 소개, 생성일자, 수정일자의 반환 정보를 볼 수 있다.
+
+![이력서 게시물 삭제 API](./imgs/10.%20이력서%20게시물%20삭제.png)

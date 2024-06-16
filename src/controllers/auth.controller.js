@@ -3,12 +3,12 @@ import bcrypt from 'bcrypt';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { AUTH_CONSTANT } from '../constants/auth.constant.js';
-import { AuthService } from '../services/auth.service.js';
 import { JWT } from '../utils/generate-token.util.js';
 
 export class AuthController {
-  authService = new AuthService();
-
+  constructor(authService) {
+    this.authService = authService;
+  }
   signupUser = async (req, res, next) => {
     try {
       const { name, email, password, passwordCheck } = req.body;
@@ -27,7 +27,7 @@ export class AuthController {
         });
       }
 
-      const findUserByEmail = await this.authService.findUserByEmail(email);
+      const findUserByEmail = await this.authService.checkAuthUser({ email });
 
       if (findUserByEmail) {
         const isExistEmail = findUserByEmail.email;
@@ -52,10 +52,7 @@ export class AuthController {
 
       const registeredUser = await this.authService.registerUser(name, email, hashedPW);
 
-      return res.status(HTTP_STATUS.CREATED).json({
-        status: HTTP_STATUS.CREATED,
-        data: registeredUser,
-      });
+      return res.status(HTTP_STATUS.CREATED).json({ data: registeredUser });
     } catch (error) {
       next(error);
     }
@@ -65,10 +62,9 @@ export class AuthController {
     try {
       const { email, password } = req.body;
 
-      const findUserByEmail = await this.authService.findUserByEmail(email);
-      const isExistEmail = findUserByEmail.email;
+      const findUserByEmail = await this.authService.checkAuthUser({ email });
 
-      if (!isExistEmail) {
+      if (!findUserByEmail) {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({
           status: HTTP_STATUS.UNAUTHORIZED,
           // message: 존재하지 않는 이메일입니다.
@@ -87,18 +83,25 @@ export class AuthController {
       const signedAccessToken = await JWT.generateAccessToken(findUserByEmail.id);
       const signedRefreshToken = await JWT.generateRefreshToken(findUserByEmail.id);
 
-      // Store refresh token in the database
-      await JWT.storeRefreshToken(
+      const hashedRefreshToken = await bcrypt.hash(signedRefreshToken, AUTH_CONSTANT.HASH_SALT);
+
+      // Store refresh token in the database and response login information.
+      const loggedInUser = await this.authService.logInUser(
+        findUserByEmail.id, 
+        findUserByEmail.name,
+        email,
+        signedAccessToken,
+        signedRefreshToken
+      );
+
+      await this.authService.storeRefreshToken(
         findUserByEmail.id,
-        signedRefreshToken,
+        hashedRefreshToken,
         req.ip,
         req.get('User-Agent')
       );
 
-      return res.status(HTTP_STATUS.OK).json({
-        accessToken: signedAccessToken,
-        refreshToken: signedRefreshToken,
-      });
+      return res.status(HTTP_STATUS.OK).json({ data: loggedInUser });
     } catch (error) {
       next(error);
     }

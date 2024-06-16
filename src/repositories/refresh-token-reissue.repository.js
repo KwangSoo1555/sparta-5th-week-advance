@@ -1,22 +1,25 @@
-import { prisma } from '../utils/prisma.util.js';
-
 export class RefreshTokenRepository {
-  refreshTokenReissue = async (userId, refreshToken, ip, userAgent) => {
-    const upsertRefreshToken = await prisma.refreshToken.upsert({
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
+
+  storeReIssueRefreshToken = async (userId, hashedReIssueRefreshToken, ip, userAgent) => {
+    const upsertRefreshToken = await this.prisma.refreshToken.update({
       where: { userId },
-      update: {
-        refreshToken,
-        ip,
-        userAgent,
+      data: {
+        refreshToken: hashedReIssueRefreshToken,
+        ip, 
+        userAgent, 
         updatedAt: new Date(),
       },
-      create: {
-        userId,
-        refreshToken,
-        ip,
-        userAgent,
-      },
     });
+
     return upsertRefreshToken;
+  };
+
+  checkRefreshToken = async (params) => {
+    return await this.prisma.refreshToken.findFirst({
+      where: params,
+    });
   };
 }

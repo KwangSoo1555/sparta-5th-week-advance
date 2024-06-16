@@ -29,7 +29,6 @@ export class UserProfileService {
       id: updatedUser.id,
       name: updatedUser.name,
       email: updatedUser.email,
-      password: updatedUser.newPassword,
       updatedAt: updatedUser.updatedAt,
     };
   };

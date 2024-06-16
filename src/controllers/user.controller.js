@@ -22,10 +22,7 @@ export class UserProfileController {
         });
       }
 
-      return res.status(HTTP_STATUS.OK).json({
-        status: HTTP_STATUS.OK,
-        data: findUser,
-      });
+      return res.status(HTTP_STATUS.OK).json({ data: findUser });
     } catch (error) {
       next(error);
     }
@@ -72,14 +69,14 @@ export class UserProfileController {
         if (!match) {
           return res.status(HTTP_STATUS.UNAUTHORIZED).json({
             status: HTTP_STATUS.UNAUTHORIZED,
-            // message: 입력한 비밀번호가 틀립니다.
+            message: "입력한 비밀번호가 틀립니다."
           });
         }
 
         if (currentPassword === newPassword) {
           return res.status(HTTP_STATUS.BAD_REQUEST).json({
             status: HTTP_STATUS.BAD_REQUEST,
-            // message: 현재 비밀번호와 새로운 비밀번호가 일치합니다. 다른 비밀번호를 입력하세요.
+            // message: "기존 비밀번호가 아닌 다른 비밀번호를 입력하세요."
           });
         }
 
@@ -103,7 +100,7 @@ export class UserProfileController {
 
       updatedUser.newPasswrod = undefined;
 
-      return res.status(200).json({ data: updatedUser });
+      return res.status(HTTP_STATUS.OK).json({ data: updatedUser });
     } catch (error) {
       next(error);
     }

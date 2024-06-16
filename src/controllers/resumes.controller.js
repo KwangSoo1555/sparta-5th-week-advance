@@ -8,7 +8,7 @@ export class ResumesController {
 
   createResume = async (req, res, next) => {
     try {
-      const userId = req.userId;
+      const userId = req.user.id;
 
       const { title, introduce } = req.body;
 
@@ -43,7 +43,7 @@ export class ResumesController {
 
       const post = await this.resumesService.findOnePost(resumeId);
 
-      return res.status(200).json({ data: post });
+      return res.status(HTTP_STATUS.OK).json({ data: post });
     } catch (error) {
       next(error);
     }
@@ -62,7 +62,7 @@ export class ResumesController {
 
       const updatedPost = await this.resumesService.updatePost(resumeId, title, introduce);
 
-      return res.status(200).json({ data: updatedPost });
+      return res.status(HTTP_STATUS.OK).json({ data: updatedPost });
     } catch (error) {
       next(error);
     }
@@ -80,7 +80,7 @@ export class ResumesController {
 
       const deletedPost = await this.resumesService.deletePost(resumeId);
 
-      return res.status(200).json({ data: deletedPost });
+      return res.status(HTTP_STATUS.OK).json({ data: deletedPost });
     } catch (error) {
       next(error);
     }
